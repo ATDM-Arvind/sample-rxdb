@@ -1,0 +1,26 @@
+.userListContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    text-align: left;
+    padding: 16px;
+  }
+ul {
+    list-style-type: none; /* Remove the default bullet */
+}
+
+li {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-left: 20px; /* Add space for the custom bullet */
+    background-color:antiquewhite;
+    margin: 10px;
+    padding: 10px;
+}
+label{
+    font-weight: bold;
+}
+label2{
+    font-weight: 300;
+}
