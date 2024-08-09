@@ -12,13 +12,11 @@ const UserForm = () => {
     const db = await getDatabase();
     const usersCollection = db.heroes;
 
-    await usersCollection.insert({
+    usersCollection.insert({
       id: `${firstName}-${lastName}-${Date.now()}`,
       firstName,
       lastName
     });
-
-    await usersCollection.find().exec();
 
     setFirstName('');
     setLastName('');

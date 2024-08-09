@@ -7,7 +7,7 @@ function Home() {
 
   return (
     <div className="App">
-      <h1>RxDB React App</h1>
+      <h1>React App RxDB database</h1>
       <UserForm />
       <UserList/>
     </div>

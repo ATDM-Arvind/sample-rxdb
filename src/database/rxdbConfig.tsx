@@ -11,11 +11,9 @@ import {
 } from 'rxdb';
 
 
-import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
 import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 
-addRxPlugin(RxDBDevModePlugin);
 addRxPlugin(RxDBQueryBuilderPlugin);
 
 export const heroSchemaLiteral = {
@@ -42,13 +40,12 @@ export const heroSchemaLiteral = {
   required: ['firstName', 'lastName', 'id'],
 } as const;
 
+/**
+ * Creating document type from schema 
+ */
 const schemaTyped = toTypedRxJsonSchema(heroSchemaLiteral);
-
-// aggregate the document type from the schema
 export type HeroDocType = ExtractDocumentTypeFromTypedRxJsonSchema<typeof schemaTyped>;
-
-// create the typed RxJsonSchema from the literal typed object.
-export const heroSchema: RxJsonSchema<HeroDocType> = heroSchemaLiteral;
+// ===
 
 export type HeroDocMethods = {
   scream: (v: string) => string;
@@ -70,6 +67,11 @@ export type MyDatabaseCollections = {
 
 export type MyDatabase = RxDatabase<MyDatabaseCollections>;
 
+{/* 
+    Define Schema, methods, collection methods which will be used in database 
+*/}
+
+export const heroSchema: RxJsonSchema<HeroDocType> = heroSchemaLiteral;
 
 const heroDocMethods: HeroDocMethods = {
   scream: function(this: HeroDocument, what: string) {
@@ -84,28 +86,42 @@ const heroCollectionMethods: HeroCollectionMethods = {
 };
 
 
+{/* 
+  CREATE DATABASE OBJECT
+*/}
+
 let dbPromise : Promise<MyDatabase>;
 const _create = async () => {
   console.log('Creating database...');
   /**
    * create database and collections
    */
+  if (process.env.NODE_ENV !== "production") {
+    await import('rxdb/plugins/dev-mode').then(
+        module => addRxPlugin(module.RxDBDevModePlugin)
+    );
+  }
+
   const db: MyDatabase = await createRxDatabase<MyDatabaseCollections>({
-    name: 'mydb2',
-    storage: getRxStorageDexie ()
+      name: 'mydb2',
+      storage: getRxStorageDexie ()
   });
 
 
   await db.addCollections({
-    heroes: {
-        schema: heroSchema,
-        methods: heroDocMethods,
-        statics: heroCollectionMethods
-    }
-});
+      heroes: {
+          schema: heroSchema,
+          methods: heroDocMethods,
+          statics: heroCollectionMethods
+      }
+  });
 
   return db;
 };
+
+{/*
+  Singleton method to get database object 
+*/}
 
 export const getDatabase = () => {
   if (!dbPromise) {
