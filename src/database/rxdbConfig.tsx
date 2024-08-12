@@ -49,6 +49,7 @@ export type HeroDocType = ExtractDocumentTypeFromTypedRxJsonSchema<typeof schema
 
 export type HeroDocMethods = {
   scream: (v: string) => string;
+  fullName: () => string;
 };
 
 export type HeroDocument = RxDocument<HeroDocType, HeroDocMethods>;
@@ -76,7 +77,10 @@ export const heroSchema: RxJsonSchema<HeroDocType> = heroSchemaLiteral;
 const heroDocMethods: HeroDocMethods = {
   scream: function(this: HeroDocument, what: string) {
       return this.firstName + ' screams: ' + what.toUpperCase();
-  }
+  },
+  fullName: function(this: HeroDocument) {
+    return `${this.firstName} ${this.lastName}`;
+}
 };
 const heroCollectionMethods: HeroCollectionMethods = {
   countAllDocuments: async function(this: HeroCollection) {
